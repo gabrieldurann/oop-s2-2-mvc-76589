@@ -8,3 +8,4 @@ riderModule.iml
 *.db-shm
 *.db-wal
 logs/
+*.DotSettings.user
