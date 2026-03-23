@@ -1,0 +1,71 @@
+@model FoodSafetyTracker.MVC.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h1>Dashboard</h1>
+
+<form asp-action="Index" method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <label class="form-label">Filter by Town</label>
+        <select name="town" class="form-select">
+            <option value="">-- All Towns --</option>
+            @foreach (var town in Model.AvailableTowns)
+            {
+                <option value="@town" selected="@(town == Model.SelectedTown)">@town</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label">Filter by Risk Rating</label>
+        <select name="riskRating" class="form-select">
+            <option value="">-- All Risk Ratings --</option>
+            @foreach (var rating in Enum.GetValues<FoodSafetyTracker.Domain.Entities.Enums.RiskRating>())
+            {
+                <option value="@rating" selected="@(rating.ToString() == Model.SelectedRiskRating)">@rating</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-4 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary me-2">Apply Filters</button>
+        <a asp-action="Index" class="btn btn-secondary">Clear</a>
+    </div>
+</form>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Inspections This Month</div>
+            <div class="card-body">
+                <h2 class="card-title">@Model.InspectionsThisMonth</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-header">Failed Inspections This Month</div>
+            <div class="card-body">
+                <h2 class="card-title">@Model.FailedInspectionsThisMonth</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-header">Overdue Follow-Ups</div>
+            <div class="card-body">
+                <h2 class="card-title">@Model.OverdueFollowUps</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-controller="Premises" asp-action="Index" class="btn btn-outline-primary me-2">View Premises</a>
+    <a asp-controller="Inspection" asp-action="Index" class="btn btn-outline-primary me-2">View Inspections</a>
+    <a asp-controller="FollowUp" asp-action="Index" class="btn btn-outline-primary">View Follow-Ups</a>
+</div>
