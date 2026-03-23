@@ -1,0 +1,34 @@
+@model FoodSafetyTracker.Domain.Entities.FollowUp
+
+@{
+    ViewData["Title"] = "Add Follow-Up";
+}
+
+<h1>Add Follow-Up</h1>
+
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="InspectionId" class="form-label">Inspection</label>
+        <select asp-for="InspectionId" class="form-select">
+            <option value="">-- Select Inspection --</option>
+            @foreach (var inspection in ViewBag.Inspections as IEnumerable<FoodSafetyTracker.Domain.Entities.Inspection> ?? [])
+            {
+                <option value="@inspection.Id" selected="@(inspection.Id == ViewBag.SelectedInspectionId)">
+                    @inspection.InspectionDate.ToShortDateString() - @inspection.Premises?.Name
+                </option>
+            }
+        </select>
+        <span asp-validation-for="InspectionId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DueDate" class="form-label"></label>
+        <input asp-for="DueDate" type="date" class="form-control" />
+        <span asp-validation-for="DueDate" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

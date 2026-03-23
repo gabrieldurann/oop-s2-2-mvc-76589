@@ -1,0 +1,31 @@
+@model FoodSafetyTracker.Domain.Entities.FollowUp
+
+@{
+    ViewData["Title"] = "Close Follow-Up";
+}
+
+<h1>Close Follow-Up</h1>
+
+<p>Are you sure you want to close this follow-up?</p>
+
+<dl class="row">
+    <dt class="col-sm-3">Inspection</dt>
+    <dd class="col-sm-9">@Model.Inspection?.InspectionDate.ToShortDateString() - @Model.Inspection?.Premises?.Name</dd>
+
+    <dt class="col-sm-3">Due Date</dt>
+    <dd class="col-sm-9">@Model.DueDate.ToShortDateString()</dd>
+
+    <dt class="col-sm-3">Status</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+</dl>
+
+<form asp-action="Close">
+    <input type="hidden" asp-for="Id" />
+    <div class="mb-3">
+        <label asp-for="ClosedDate" class="form-label">Closed Date</label>
+        <input asp-for="ClosedDate" type="date" class="form-control" />
+        <span asp-validation-for="ClosedDate" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-success">Confirm Close</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
