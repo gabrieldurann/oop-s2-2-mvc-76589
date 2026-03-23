@@ -1,0 +1,13 @@
+@model Microsoft.AspNetCore.Mvc.ProblemDetails
+
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="container mt-5">
+    <div class="alert alert-danger">
+        <h1>Something went wrong</h1>
+        <p>We're sorry, an unexpected error occurred. Please try again or contact support if the problem persists.</p>
+    </div>
+    <a asp-controller="Dashboard" asp-action="Index" class="btn btn-primary">Go to Dashboard</a>
+</div>

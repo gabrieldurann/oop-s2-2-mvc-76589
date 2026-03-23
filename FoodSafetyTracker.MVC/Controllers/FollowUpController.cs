@@ -92,17 +92,17 @@ public class FollowUpController : Controller
         }
         return View(followUp);
     }
-
+    
     // POST: FollowUp/Close/5
     [HttpPost, ActionName("Close")]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin,Inspector")]
-    public async Task<IActionResult> CloseConfirmed(int id)
+    public async Task<IActionResult> CloseConfirmed(int id, DateTime? closedDate)
     {
         var followUp = await _followUpRepository.GetByIdAsync(id);
         if (followUp == null) return NotFound();
 
-        if (followUp.ClosedDate == null)
+        if (!closedDate.HasValue)
         {
             _logger.LogWarning("FollowUp ID {FollowUpId} cannot be closed without a ClosedDate", id);
             ModelState.AddModelError("", "A closed date is required to close a follow-up.");
@@ -110,8 +110,9 @@ public class FollowUpController : Controller
         }
 
         followUp.Status = FollowUpStatus.Closed;
+        followUp.ClosedDate = closedDate.Value;
         await _followUpRepository.UpdateAsync(followUp);
-        _logger.LogInformation("FollowUp closed: ID {FollowUpId}", id);
+        _logger.LogInformation("FollowUp closed: ID {FollowUpId} on {ClosedDate}", id, closedDate.Value);
         return RedirectToAction(nameof(Index));
     }
 
