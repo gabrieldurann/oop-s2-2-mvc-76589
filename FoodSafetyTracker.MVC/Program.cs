@@ -1,6 +1,8 @@
+using FoodSafetyTracker.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using FoodSafetyTracker.MVC.Data;
+using FoodSafetyTracker.MVC.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,10 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IPremisesRepository, PremisesRepository>();
+builder.Services.AddScoped<IInspectionRepository, InspectionRepository>();
+builder.Services.AddScoped<IFollowUpRepository, FollowUpRepository>();
 
 var app = builder.Build();
 
@@ -45,5 +51,12 @@ app.MapControllerRoute(
 
 app.MapRazorPages()
     .WithStaticAssets();
+
+using (var scope = app.Services.CreateScope())
+{
+    await SeedData.InitialiseAsync(scope.ServiceProvider);
+}
+
+app.Run();
 
 app.Run();
