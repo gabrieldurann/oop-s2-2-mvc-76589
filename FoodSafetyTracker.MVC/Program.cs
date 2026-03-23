@@ -2,9 +2,20 @@ using FoodSafetyTracker.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using FoodSafetyTracker.MVC.Data;
+using FoodSafetyTracker.MVC.Middleware;
 using FoodSafetyTracker.MVC.Repositories;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .Enrich.WithProperty("Application", "FoodSafetyTracker")
+    .Enrich.WithProperty("Environment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production")
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
@@ -40,6 +51,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseAuthentication();
+app.UseMiddleware<UserNameEnrichmentMiddleware>();
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -52,11 +64,22 @@ app.MapControllerRoute(
 app.MapRazorPages()
     .WithStaticAssets();
 
-using (var scope = app.Services.CreateScope())
+try
 {
-    await SeedData.InitialiseAsync(scope.ServiceProvider);
+    Log.Information("FoodSafetyTracker application starting up");
+    
+    using (var scope = app.Services.CreateScope())
+    {
+        await SeedData.InitialiseAsync(scope.ServiceProvider);
+    }
+    
+    app.Run();
 }
-
-app.Run();
-
-app.Run();
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application failed to start");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
